@@ -142,6 +142,18 @@ app.post('/users', function(req, res) {
 		});
 });
 
+// POST /users/login
+app.port('/users/login', function(req, res) {
+	var body = _.pick(req.body, "email", "password");
+
+	if (typeof body.email !== 'string' || typeof body.password !== 'string') {
+		return res.status(400).send();
+	}
+
+	res.json(body);
+
+});
+
 
 
 db.sequelize.sync(

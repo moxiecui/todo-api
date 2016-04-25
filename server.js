@@ -35,12 +35,14 @@ app.get('/todos', function(req, res) {
 		};
 	}
 
-	db.todo.findAll({where: where })
-	.then(function(todos) {
-		res.json(todos);
-	}, function(error) {
-		res.status(500).send();
-	});
+	db.todo.findAll({
+			where: where
+		})
+		.then(function(todos) {
+			res.json(todos);
+		}, function(error) {
+			res.status(500).send();
+		});
 
 });
 
@@ -49,15 +51,15 @@ app.get('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
 
 	db.todo.findById(todoId)
-	.then(function (todo) {
-		if (!!todo) {
-			res.json(todo.toJSON());
-		} else {
-			res.status(404).send();
-		}
-	}, function (error) {
-		res.status(500).send();
-	});
+		.then(function(todo) {
+			if (!!todo) {
+				res.json(todo.toJSON());
+			} else {
+				res.status(404).send();
+			}
+		}, function(error) {
+			res.status(500).send();
+		});
 });
 
 // POST /todos/
@@ -65,29 +67,33 @@ app.post('/todos', function(req, res) {
 	var body = _.pick(req.body, "description", "completed");
 
 	db.todo.create(body)
-	.then(function (todo) {
-		res.json(todo.toJSON());
-	}, function (error){
-		res.status(400).json(error);
-	});
+		.then(function(todo) {
+			res.json(todo.toJSON());
+		}, function(error) {
+			res.status(400).json(error);
+		});
 
 });
 
 // DELETE /todos/:id
 app.delete('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo = _.findWhere(todos, {
-		id: todoId
-	});
 
-	if (!matchedTodo) {
-		res.status(404).json({
-			"error": "no todo item found with id " + todoId
-		});
-	} else {
-		todos = _.without(todos, matchedTodo);
-		res.json(matchedTodo);
-	}
+	db.todo.destroy({
+		where: {
+			id: todoId
+		}
+	}).then(function(rowsDeleted) {
+		if (rowsDeleted === 0) {
+			res.status(404).json({
+				"error": "no todo item found with id " + todoId
+			});
+		} else {
+			res.status(204).send();
+		}
+	}, function() {
+		res.status(500).send();
+	});
 });
 
 // PUT /todos/:id

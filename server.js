@@ -63,20 +63,7 @@ app.get('/todos/:id', function(req, res) {
 // POST /todos/
 app.post('/todos', function(req, res) {
 	var body = _.pick(req.body, "description", "completed");
-	// var body = req.body;
-	// if (!(_.isBoolean(body.completed) && _.isString(body.description)) || body.description.trim().length === 0) {
-	// 	return res.status(400).send();
-	// }
 
-	// console.log('description: ' + body.description);
-	// body.id = todoNextId;
-	// body.description = body.description.trim();
-	// todoNextId += 1;
-	// // console.log(_.pick(body, "id", "description", "completed"))
-	// // todos.push(_.pick(body, "id", "description", "completed"));
-	// todos.push(body);
-
-	// res.json(body);
 	db.todo.create(body)
 	.then(function (todo) {
 		res.json(todo.toJSON());
